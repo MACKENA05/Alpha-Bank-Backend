@@ -13,6 +13,10 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "users", indexes = {
+        @Index(name = "idx_user_email", columnList = "email"),
+        @Index(name= "idx_user_phone", columnList = "phone_number")
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -62,6 +66,9 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+//    utils methods
+
 
 
 
