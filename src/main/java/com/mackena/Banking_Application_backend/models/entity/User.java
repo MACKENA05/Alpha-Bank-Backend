@@ -69,6 +69,21 @@ public class User {
 
 //    utils methods
 
+    public void addAccount(Account account) {
+        accounts.add(account);
+        account.setUser(this);
+    }
+    public void removeAccount(Account account) {
+        accounts.remove(account);
+        account.setUser(null);
+    }
+    public boolean isAdmin(){
+        return UserRole.ADMIN.equals(this.role);
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
 
 
 
