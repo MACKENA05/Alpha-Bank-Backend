@@ -3,14 +3,14 @@ package com.mackena.Banking_Application_backend.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import io.jsonwebtoken.SignatureAlgorithm;
 
-import java.nio.file.attribute.UserPrincipal;
+
 import java.security.Key;
 import java.util.Date;
 
@@ -18,7 +18,7 @@ import java.util.Date;
 @Slf4j
 public class JwtTokenProvider {
 
-    @Value("${app.jwt.secret:mySecretKey")
+    @Value("${app.jwt.secret:mySecretKey}")
     private String jwtSecret;
 
     @Value("${app.jwt.expiration:86400000}")
@@ -38,7 +38,7 @@ public class JwtTokenProvider {
         Date expiryDate = new Date(System.currentTimeMillis() + jwtExpirationInMs);
 
         return Jwts.builder()
-                .setSubject(userPrincipal.getEmail)
+                .setSubject(userPrincipal.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
                 .signWith(key, SignatureAlgorithm.HS512)

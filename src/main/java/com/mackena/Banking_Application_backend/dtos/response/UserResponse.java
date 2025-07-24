@@ -24,7 +24,7 @@ public class UserResponse {
     private String address;
     private UserRole role;
     private Boolean isEnabled;
-    private List<AccountSummaryResponse> accounts;
+    private List<AccountResponse> accounts;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -21,14 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     //inject userService bean
-    @Autowired
-    private final UserServiceImpl userService;
-
-    @PostMapping("/register")
-    public ResponseEntity<ApiResponse<UserResponse>> registerUser(
-            @Valid @RequestBody UserRegistrationRequest request) {
-
-        return userService.registerUser(request);
-    };
+//    @Autowired
+//    private final UserServiceImpl userService;
+//
+//    @PostMapping("/register")
+//    public ResponseEntity<ApiResponse<UserResponse>> registerUser(
+//            @Valid @RequestBody UserRegistrationRequest request) {
+//
+//        return userService.registerUser(request);
+//    };
 
 }

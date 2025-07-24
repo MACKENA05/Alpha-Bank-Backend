@@ -1,6 +1,7 @@
 package com.mackena.Banking_Application_backend.util.converter;
 
 import com.mackena.Banking_Application_backend.dtos.response.AccountResponse;
+import com.mackena.Banking_Application_backend.dtos.response.AccountSummaryResponse;
 import com.mackena.Banking_Application_backend.dtos.response.TransactionResponse;
 import com.mackena.Banking_Application_backend.dtos.response.UserResponse;
 import com.mackena.Banking_Application_backend.models.entity.Account;
@@ -32,7 +33,7 @@ public class EntityConverter {
                 .phoneNumber(user.getPhoneNumber())
                 .address(user.getAddress())
                 .role(user.getRole())
-                .isActive(user.isActive())
+                .isEnabled(user.isActive())
                 .accounts(user.getAccounts() != null ?
                         user.getAccounts().stream()
                                 .map(this::toAccountResponse)
@@ -57,6 +58,9 @@ public class EntityConverter {
                 .updatedAt(account.getUpdatedAt())
                 .build();
     }
+
+
+
 
 //    public TransactionResponse toTransactionResponse(Transaction transaction) {
 //        if (transaction == null) return null;

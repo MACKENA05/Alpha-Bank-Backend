@@ -34,7 +34,7 @@ public class UserPrincipal implements UserDetails {
                 user.getEmail(),
                 user.getPassword(),
                 user.getRole(),
-                user.isEnabled()
+                user.isActive()
         );
     }
     //specifies user roles for authorization
@@ -45,7 +45,6 @@ public class UserPrincipal implements UserDetails {
         );
     }
 
-    //telling springboot what to use as the username
     @Override
     public String getPassword() {
         return password;
