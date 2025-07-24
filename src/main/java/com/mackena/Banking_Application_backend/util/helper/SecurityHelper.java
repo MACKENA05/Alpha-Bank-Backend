@@ -8,22 +8,22 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SecurityHelper {
 
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    public String encodePassword(String rawPassword) {
-        return passwordEncoder.encode(rawPassword);
+    public String encodePassword(String password) {
+        return passwordEncoder.encode(password);
+    }
+
+    public String encodePin(String pin) {
+        return passwordEncoder.encode(pin);
     }
 
     public boolean matchesPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
-    public String encodePin(String rawPin) {
-        return passwordEncoder.encode(rawPin);
-    }
-
     public boolean matchesPin(String rawPin, String encodedPin) {
         return passwordEncoder.matches(rawPin, encodedPin);
     }
-}
+};
 

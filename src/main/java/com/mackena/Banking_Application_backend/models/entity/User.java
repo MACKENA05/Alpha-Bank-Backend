@@ -51,9 +51,9 @@ public class User {
     @Builder.Default
     private UserRole role = UserRole.USER;
 
-    @Column(name = "is_active")
+    @Column(name = "is_enabled")
     @Builder.Default
-    private boolean isActive = true;
+    private boolean isEnabled = true;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
@@ -67,23 +67,30 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-//    utils methods
-
-    public void addAccount(Account account) {
-        accounts.add(account);
-        account.setUser(this);
-    }
-    public void removeAccount(Account account) {
-        accounts.remove(account);
-        account.setUser(null);
-    }
-    public boolean isAdmin(){
-        return UserRole.ADMIN.equals(this.role);
-    }
-
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
-
-
+////    utils methods
+//
+//    public void addAccount(Account account) {
+//        accounts.add(account);
+//        account.setUser(this);
+//    }
+//    public void removeAccount(Account account) {
+//        accounts.remove(account);
+//        account.setUser(null);
+//    }
+//    public boolean isAdmin(){
+//        return UserRole.ADMIN.equals(this.role);
+//    }
+//
+//    public String getFullName() {
+//        return firstName + " " + lastName;
+//    }
+//
+//
+//    public void setEnabled(boolean enabled) {
+//        this.enabled = enabled;
+//    }
+//
+//    public boolean isEnabled() {
+//        return enabled;
+//    }
 }

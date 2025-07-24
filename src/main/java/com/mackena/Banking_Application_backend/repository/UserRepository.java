@@ -29,7 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByRole(UserRole role);
 
-    List<User> findByIsActive(Boolean isActive);
+    List<User> findByIsEnabled(Boolean isEnabled);
 
     List<User> findByRole(UserRole role, Pageable pageable);
 
@@ -42,13 +42,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Statistics queries
     long countByRole(UserRole role);
 
-    long countByIsActive(Boolean isActive);
+    long countByIsEnabled(Boolean isEnabled);
 
     @Query("SELECT COUNT(u) FROM User u WHERE u.createdAt >= :date")
     long countUsersCreatedAfter(@Param("date") LocalDateTime date);
 
     // Admin queries
-    @Query("SELECT u FROM User u WHERE u.role = 'ADMIN' AND u.isActive = true")
+    @Query("SELECT u FROM User u WHERE u.role = 'ADMIN' AND u.isEnabled = true")
     List<User> findActiveAdmins();
 
     @Query("SELECT u FROM User u ORDER BY u.createdAt DESC")

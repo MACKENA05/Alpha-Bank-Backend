@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.enabled;
 
 @Data
 @NoArgsConstructor
@@ -34,7 +33,7 @@ public class UserPrincipal implements UserDetails {
                 user.getEmail(),
                 user.getPassword(),
                 user.getRole(),
-                user.isActive()
+                user.isEnabled()
         );
     }
     //specifies user roles for authorization
@@ -62,7 +61,10 @@ public class UserPrincipal implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() { return true; }
     @Override
-    public boolean isEnabled() { return enabled; }
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
 
     public String getFullName() {
         return firstName + " " + lastName;

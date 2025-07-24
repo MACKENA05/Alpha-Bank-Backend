@@ -29,11 +29,12 @@ public class EntityConverter {
                 .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .fullName(user.getFirstName() + " " + user.getLastName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .address(user.getAddress())
                 .role(user.getRole())
-                .isEnabled(user.isActive())
+                .isEnabled(user.isEnabled())
                 .accounts(user.getAccounts() != null ?
                         user.getAccounts().stream()
                                 .map(this::toAccountResponse)
