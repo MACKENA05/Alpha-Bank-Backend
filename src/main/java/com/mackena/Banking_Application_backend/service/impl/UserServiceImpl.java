@@ -66,6 +66,7 @@ public class UserServiceImpl implements UserService {
         return buildAuthResponse(savedUser, "User registered successfully");
     }
 
+
     @Transactional
     @Override
     public AuthResponse loginUser(LoginRequest request) {

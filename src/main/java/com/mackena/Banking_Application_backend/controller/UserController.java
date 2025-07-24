@@ -23,7 +23,7 @@ public class UserController {
     private final UserRepository userRepository;
     private final EntityConverter entityConverter;
 
-    @GetMapping("/me")
+    @GetMapping("/profile")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<UserResponse> getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
         log.info("Getting current user info for: {}", userPrincipal.getEmail());
@@ -34,16 +34,4 @@ public class UserController {
         UserResponse userResponse = entityConverter.toUserResponse(user);
         return ResponseEntity.ok(userResponse);
     }
-
-    @GetMapping("/profile")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<UserResponse> getUserProfile(@CurrentUser UserPrincipal userPrincipal) {
-        log.info("Getting user profile for: {}", userPrincipal.getEmail());
-
-        User user = userRepository.findByEmail(userPrincipal.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        UserResponse userResponse = entityConverter.toUserResponse(user);
-        return ResponseEntity.ok(userResponse);
-    }
-}
+};
