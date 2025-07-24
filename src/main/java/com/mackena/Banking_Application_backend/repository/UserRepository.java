@@ -17,7 +17,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    //    Authentication using email and phonenumber during signUp and signIn
+    //    Authentication using email and phone number during signUp and signIn
 
     Optional<User> findByEmail(String username);
 
