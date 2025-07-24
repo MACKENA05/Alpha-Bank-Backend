@@ -75,7 +75,7 @@ public class Transaction {
         // Generate format: TXN123456ABC (12 characters total)
         long timestamp = System.currentTimeMillis();
         String uuid = UUID.randomUUID().toString().substring(0, 3).toUpperCase();
-        return "TXN" + (timestamp % 1000000) + uuid;
+        return "TSN" + (timestamp % 1000000) + uuid;
     }
 
     // Utility methods
