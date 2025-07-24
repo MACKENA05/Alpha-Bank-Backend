@@ -20,7 +20,7 @@ public class UserRegistrationRequest {
     @Size(max= 255, message = "Email must not exceed 255 characters")
     private String email;
 
-    @NotBlank(message = "Paasword is required")
+    @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$",message = "Password must contain atleast one uppercase letter,one lowercase and one number" )
     private String Password;
