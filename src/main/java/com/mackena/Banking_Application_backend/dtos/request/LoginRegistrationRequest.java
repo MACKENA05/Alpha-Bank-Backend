@@ -20,7 +20,7 @@ public class LoginRegistrationRequest {
     @Email(message = "Please provide a valid email address")
     private String email;
 
-    @NotBlank(message = "Paasword is required")
+    @NotBlank(message = "Password is required")
     @Size(min = 1, message = "Password cannot be empty")
     private String Password;
 }
