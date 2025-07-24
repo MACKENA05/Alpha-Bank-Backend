@@ -24,7 +24,7 @@ public class EntityConverter {
     public UserResponse toUserResponse(User user) {
         if (user == null) return null;
 
-        UserResponse build = UserResponse.builder()
+        return UserResponse.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
@@ -40,7 +40,6 @@ public class EntityConverter {
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
-        return build;
     }
 
     public AccountResponse toAccountResponse(Account account) {

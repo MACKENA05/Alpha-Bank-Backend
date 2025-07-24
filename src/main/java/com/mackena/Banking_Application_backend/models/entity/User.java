@@ -53,7 +53,7 @@ public class User {
 
     @Column(name = "is_active")
     @Builder.Default
-    private boolean isActive = true;
+    private boolean isEnabled = true;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default

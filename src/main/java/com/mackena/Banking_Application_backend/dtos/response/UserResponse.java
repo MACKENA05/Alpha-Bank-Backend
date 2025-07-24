@@ -23,7 +23,7 @@ public class UserResponse {
     private String phoneNumber;
     private String address;
     private UserRole role;
-    private Boolean isActive;
+    private Boolean isEnabled;
     private List<AccountSummaryResponse> accounts;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
