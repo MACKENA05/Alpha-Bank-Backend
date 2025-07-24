@@ -9,6 +9,7 @@ import com.mackena.Banking_Application_backend.util.generator.AccountNumberGener
 import com.mackena.Banking_Application_backend.util.formatter.DateTimeUtil;
 import com.mackena.Banking_Application_backend.util.validator.PinValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,6 +25,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse registerUser(UserRegistrationRequest request) {
-        if
+        return null;
     }
 }
