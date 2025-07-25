@@ -1,8 +1,8 @@
 package com.mackena.Banking_Application_backend.models.enums;
 
 public enum TransactionDirection {
-    DEBIT("debit"),
-    CREDIT("credit");
+    DEBIT("Money going out"),
+    CREDIT("Money Going In");
 
     private final String value;
 

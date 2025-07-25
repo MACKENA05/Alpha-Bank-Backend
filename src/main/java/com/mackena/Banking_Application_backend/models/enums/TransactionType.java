@@ -1,8 +1,9 @@
 package com.mackena.Banking_Application_backend.models.enums;
 
 public enum TransactionType {
-    WITHDRAW("Withdraw"),
-    DEPOSIT("Deposit");
+
+    TRANSFER_OUT("Transfer Out"),
+    TRANSFER_IN("Transfer In");
 
     private final String description;
 

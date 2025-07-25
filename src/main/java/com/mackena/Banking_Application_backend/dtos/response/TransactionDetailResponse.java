@@ -12,16 +12,17 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionResponse {
+public class TransactionDetailResponse {
 
+    private Long id;
     private String referenceNumber;
-    private String accountNumber;
+    private String transferReference;
     private BigDecimal amount;
     private String transactionType;
-    private String notes;
+    private String transactionDirection;
+    private String description;
     private String status;
     private BigDecimal balanceAfter;
-    private LocalDateTime transactionDate;
-    private String message;
-    private String depositSource; // For deposits only
+    private LocalDateTime createdAt;
+    private String accountNumber;
 }

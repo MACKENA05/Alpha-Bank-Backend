@@ -52,6 +52,9 @@ public class Transaction {
     @Column(name = "reference_number", unique = true, nullable = false, length = 20)
     private String referenceNumber;
 
+    @Column(name = "transfer_reference", length = 255)
+    private String transferReference;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private TransactionStatus status = TransactionStatus.COMPLETED;
@@ -63,54 +66,4 @@ public class Transaction {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-
-
-//    // Generate reference number before persisting
-//    @PrePersist
-//    private void generateReferenceNumber() {
-//        if (referenceNumber == null) {
-//            referenceNumber = generateUniqueReferenceNumber();
-//        }
-//    }
-
-//    private String generateUniqueReferenceNumber() {
-//        // Generate format: TXN123456ABC (12 characters total)
-//        long timestamp = System.currentTimeMillis();
-//        String uuid = UUID.randomUUID().toString().substring(0, 3).toUpperCase();
-//        return "TSN" + (timestamp % 1000000) + uuid;
-//    }
-//
-//    // Utility methods
-//    public boolean isPending() {
-//        return TransactionStatus.PENDING.equals(this.status);
-//    }
-//
-//    public boolean isCompleted() {
-//        return TransactionStatus.COMPLETED.equals(this.status);
-//    }
-//
-//    public boolean isFailed() {
-//        return TransactionStatus.FAILED.equals(this.status);
-//    }
-//
-//    public boolean isWithdrawal() {
-//        return TransactionType.WITHDRAW.equals(this.transactionType);
-//    }
-//
-//    public boolean isDeposit() {
-//        return TransactionType.DEPOSIT.equals(this.transactionType);
-//    }
-//
-//    public boolean isDebit() {
-//        return TransactionDirection.DEBIT.equals(this.transactionDirection);
-//    }
-//
-//    public boolean isCredit() {
-//        return TransactionDirection.CREDIT.equals(this.transactionDirection);
-//    }
-//
-//    public String getFormattedAmount() {
-//        String prefix = isDebit() ? "-" : "+";
-//        return prefix + "KES " + amount.toString();
-//    }
 }
