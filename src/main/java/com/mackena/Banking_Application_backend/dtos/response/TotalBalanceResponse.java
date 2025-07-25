@@ -16,5 +16,5 @@ public class TotalBalanceResponse {
     private int totalActiveAccounts;
     private int totalUser;
     private BigDecimal averageBalancePerAccount;
-    private String Message;
+    private String message;
 }

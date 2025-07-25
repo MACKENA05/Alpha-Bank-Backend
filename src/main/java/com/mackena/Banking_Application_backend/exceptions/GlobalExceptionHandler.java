@@ -28,10 +28,33 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AccountNotFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccountNotFound(AccountNotFoundException ex) {
-        log.error("Account not found: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(ex.getMessage()));
+    public ResponseEntity<ErrorResponse> handleAccountNotFound(AccountNotFoundException e, WebRequest request) {
+        log.error("Account not found: {}", e.getMessage());
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(e.getMessage())
+                .error("Account Not Found")
+                .status(HttpStatus.NOT_FOUND.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AccountAccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccountAccessDenied(AccountAccessDeniedException e, WebRequest request) {
+        log.error("Account access denied: {}", e.getMessage());
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(e.getMessage())
+                .error("Account Access Denied")
+                .status(HttpStatus.FORBIDDEN.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)

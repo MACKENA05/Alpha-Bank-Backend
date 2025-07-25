@@ -4,6 +4,8 @@ import com.mackena.Banking_Application_backend.dto.response.LowBalanceAccountsRe
 import com.mackena.Banking_Application_backend.dtos.response.AccountListResponse;
 import com.mackena.Banking_Application_backend.dtos.response.AccountResponse;
 import com.mackena.Banking_Application_backend.dtos.response.TotalBalanceResponse;
+import com.mackena.Banking_Application_backend.exceptions.AccountAccessDeniedException;
+import com.mackena.Banking_Application_backend.exceptions.AccountNotFoundException;
 import com.mackena.Banking_Application_backend.models.entity.Account;
 import com.mackena.Banking_Application_backend.repository.AccountRepository;
 import com.mackena.Banking_Application_backend.service.AccountService;
@@ -48,27 +50,75 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountResponse getAccountByNumber(String accountNumber, Long CurrentUserId, boolean isAdmin) {
-        return null;
+    @Transactional(readOnly = true)
+    public AccountResponse getAccountByNumber(String accountNumber, Long currentUserId, boolean isAdmin) {
+
+        Account account = findAccountByNumber(accountNumber);
+
+        if(!isAdmin) {
+            validateAccountOwnership(account, currentUserId);
+        }
+        return accountConverter.toAccountResponse(account);
     }
 
     @Override
-    public LowBalanceAccountsResponse getLowBalanceAccounts(String accountNumber, Long CurrentUserId, boolean isAdmin) {
-        return null;
+    @Transactional(readOnly = true)
+    public LowBalanceAccountsResponse getLowBalanceAccounts(BigDecimal threshold) {
+        List<Account> lowBalanceAccounts = accountRepository.findAccountsWithLowBalance(threshold);
+
+        List<AccountResponse> accountResponses = lowBalanceAccounts.stream()
+                .map(accountConverter::toAccountResponse)
+                .collect(Collectors.toList());
+
+        BigDecimal totalLowBalance = lowBalanceAccounts.stream()
+                .map(Account::getBalance)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return LowBalanceAccountsResponse.builder()
+                .accounts(accountResponses)
+                .totalLowBalanceAccounts(lowBalanceAccounts.size())
+                .threshold(threshold)
+                .totalLowBalance(totalLowBalance)
+                .message("Total low balance: " + totalLowBalance)
+                .build();
+
     }
 
     @Override
-    public TotalBalanceResponse getTotalBalance(String accountNumber, Long CurrentUserId, boolean isAdmin) {
-        return null;
+    @Transactional(readOnly = true)
+    public TotalBalanceResponse getTotalSystemBalance() {
+
+        BigDecimal totalBalance = accountRepository.getTotalSystemBalance();
+        long totalActiveAccount = accountRepository.countActiveAccounts();
+        long totalUsers = accountRepository.countUsersWithActiveAccounts();
+        BigDecimal averageBalance = BigDecimal.ZERO;
+
+        if(totalActiveAccount > 0) {
+            averageBalance = totalBalance.divide(BigDecimal.valueOf(totalActiveAccount));
+        }
+
+        return TotalBalanceResponse.builder()
+                .totalSystemBalance(totalBalance)
+                .totalActiveAccounts((int)totalActiveAccount)
+                .totalUser((int) totalUsers)
+                .averageBalancePerAccount(averageBalance)
+                .message("Total System Balance: " + totalBalance)
+                .build();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Account findAccountByNumber(String accountNumber) {
-        return null;
+        return accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountNumber));
+
     }
 
     @Override
     public void validateAccountOwnership(Account account, Long userId) {
+        if(!account.getUser().getId().equals(userId)){
+            throw new AccountAccessDeniedException("You dont have permission to access this account");
+        }
 
     }
 }
