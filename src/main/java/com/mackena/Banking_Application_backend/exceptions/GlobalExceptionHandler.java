@@ -85,6 +85,21 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
+    @ExceptionHandler(InvalidAccountException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidAccount(InvalidAccountException ex) {
+        log.error("Invalid account error: {}", ex.getMessage());
+
+        ErrorResponse error = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Invalid Account")
+                .message(ex.getMessage())
+                .path("/api/transactions")
+                .build();
+
+        return ResponseEntity.badRequest().body(error);
+    }
+
     @ExceptionHandler(TransactionNotFoundException.class)
     public ResponseEntity<ApiResponse<Void>> handleTransactionNotFound(TransactionNotFoundException ex) {
         log.error("Transaction not found: {}", ex.getMessage());
@@ -179,4 +194,7 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+
+
 }
