@@ -1,31 +1,22 @@
 package com.mackena.Banking_Application_backend.service.impl;
 
-
-import com.mackena.Banking_Application_backend.dtos.request.LoginRequest;
-import com.mackena.Banking_Application_backend.dtos.request.UserRegistrationRequest;
-import com.mackena.Banking_Application_backend.dtos.response.AuthResponse;
-import com.mackena.Banking_Application_backend.exceptions.EmailAlreadyExistsException;
-import com.mackena.Banking_Application_backend.exceptions.InvalidCredentialsException;
-import com.mackena.Banking_Application_backend.models.entity.Account;
+import com.mackena.Banking_Application_backend.dto.response.DeleteUserResponse;
+import com.mackena.Banking_Application_backend.dtos.response.UserListResponse;
+import com.mackena.Banking_Application_backend.dtos.response.UserResponse;
+import com.mackena.Banking_Application_backend.exceptions.UserHasActiveBalanceException;
+import com.mackena.Banking_Application_backend.exceptions.UserNotFoundException;
 import com.mackena.Banking_Application_backend.models.entity.User;
-import com.mackena.Banking_Application_backend.models.enums.UserRole;
 import com.mackena.Banking_Application_backend.repository.UserRepository;
-import com.mackena.Banking_Application_backend.security.JwtTokenProvider;
 import com.mackena.Banking_Application_backend.service.UserService;
 import com.mackena.Banking_Application_backend.util.converter.EntityConverter;
-import com.mackena.Banking_Application_backend.util.generator.AccountNumberGenerator;
-import com.mackena.Banking_Application_backend.util.helper.SecurityHelper;
-import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
@@ -33,156 +24,71 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final EntityConverter entityConverter;
-    private final AccountNumberGenerator accountNumberGenerator;
-    private final SecurityHelper securityHelper;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final AuthenticationManager authenticationManager;
+    private final EntityConverter userConverter;
+
+    @Transactional(readOnly = true)
+    @Override
+    public UserResponse getUserProfile(Long id) {
+        User user = findUserById(id);
+        return userConverter.toUserResponse(user);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public UserResponse getUserById(Long id) {
+        User user = findUserById(id);
+        return userConverter.toUserResponse(user);
+    }
 
     @Override
-    @Transactional
-    public AuthResponse registerUser(UserRegistrationRequest request) {
-        log.info("Starting user registration for email: {}", request.getEmail());
+    public UserListResponse getAllUsers(Pageable pageable) {
 
-        // Validate PIN confirmation
-        validatePinConfirmation(request);
+        Page<User> userPage = userRepository.findAll(pageable);
 
-        // Check for existing email and phone
-        validateEmailAndPhoneUniqueness(request);
-
-        // Create and save user
-        User user = buildUserFromRequest(request);
-        User savedUser = userRepository.save(user);
-
-        // Create account for user
-        Account account = createAccountForUser(request, savedUser);
-        savedUser.getAccounts().add(account);
-        userRepository.save(savedUser);
-
-        log.info("User registered successfully with ID: {} and Account: {}",
-                savedUser.getId(), account.getAccountNumber());
-
-        // Generate JWT token and build response
-        return buildAuthResponse(savedUser, "User registered successfully");
+        Page<UserResponse> userResponsePage = userPage.map(userConverter::toUserResponse);
+        return UserListResponse.from(userResponsePage);
     }
 
 
     @Transactional
     @Override
-    public AuthResponse loginUser(LoginRequest request) {
-        log.info("User login attempt for email: {}", request.getEmail());
+    public DeleteUserResponse deleteUser(Long userId) {
 
-        try {
-            // Authenticate user using Spring Security
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        User user = findUserById(userId);
+        //checking if user has a active balance
+        BigDecimal totalBalance = userRepository.getTotalBalanceByUserId(userId);
+        if(totalBalance != null && totalBalance.compareTo(BigDecimal.ZERO) > 0) {
+            throw new UserHasActiveBalanceException(
+                    String.format("Cannot delete user %s % s.user has an active balance of Kes %.2f",
+                            user.getFirstName(), user.getLastName(), totalBalance)
             );
-
-            // Set authentication context
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            // Retrieve user from database
-            User user = userRepository.findByEmail(request.getEmail())
-                    .orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
-
-            // Check if the user account is enabled
-            if (!user.isEnabled()) {
-                throw new InvalidCredentialsException("Account is disabled. Please contact support.");
-            }
-
-            log.info("User logged in successfully: {}", user.getEmail());
-
-            // Build and return the authentication response with JWT
-            return buildAuthResponse(user, "Login successful");
-
-        } catch (InvalidCredentialsException e) {
-            log.error("Login failed for email: {} - {}", request.getEmail(), e.getMessage());
-            throw e;
-
-        } catch (Exception e) {
-            log.error("Login failed for email: {} - {}", request.getEmail(), e.getMessage());
-            throw new InvalidCredentialsException("Invalid email or password");
         }
-    }
-    // Helper method to build AuthResponse with token and expiration
-    private AuthResponse buildAuthResponse(User user, String message) {
-        String email = user.getEmail();
-        String role = "ROLE_" + user.getRole().name();
-        List<String> roles = List.of(role);
+        //Get account count  before deleting
+        int accountCount = userRepository.getActiveAccountCountByUserId(userId);
 
-        // Generate JWT token
-        String token = jwtTokenProvider.generateToken(email, roles);
+        //convert to response before deletion
+        UserResponse userResponse = userConverter.toUserResponse(user);
 
-        // Calculate expiration time
-        long expiresInSeconds = jwtTokenProvider.getJwtExpirationInMs() / 1000;
-        LocalDateTime expiresAt = LocalDateTime.now().plusSeconds(expiresInSeconds);
+        userRepository.delete(user);
 
-        return AuthResponse.builder()
-                .token(token)
-                .tokenType("Bearer")
-                .user(entityConverter.toUserResponse(user))
-                .message(message)
-                .expiresIn(expiresInSeconds)
-                .expiresAt(expiresAt)
+        return DeleteUserResponse.builder()
+                .message("User Deleted Successful")
+                .deletedUser(userResponse)
+                .totalBalanceReturned(totalBalance != null ? totalBalance : BigDecimal.ZERO)
+                .accountsClosed(accountCount)
                 .build();
     }
 
-    private void validatePinConfirmation(UserRegistrationRequest request) {
-        if (!request.getTransactionPin().equals(request.getConfirmPin())) {
-            throw new IllegalArgumentException("Transaction PIN does not match confirmation PIN");
-        }
+    @Override
+    @Transactional(readOnly = true)
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
     }
 
-    private void validateEmailAndPhoneUniqueness(UserRegistrationRequest request) {
-        if (userRepository.existsByEmail(request.getEmail()))
-            throw new EmailAlreadyExistsException("Email already registered: " + request.getEmail());
-
-        if (userRepository.existsByPhoneNumber(request.getPhoneNumber())) {
-            throw new EmailAlreadyExistsException("Phone number already registered: " + request.getPhoneNumber());
-        }
-    }
-
-
-
-    private User buildUserFromRequest(UserRegistrationRequest request) {
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setPhoneNumber(request.getPhoneNumber());
-        user.setAddress(request.getAddress());
-        user.setPassword(securityHelper.encodePassword(request.getPassword()));
-        user.setEnabled(true);
-        // Set default role if not specified
-        if (user.getRole() == null) {
-            user.setRole(UserRole.USER); // Assuming you have a Role enum
-        }
-        return user;
-    }
-
-    private Account createAccountForUser(UserRegistrationRequest request, User user) {
-        Account account = new Account();
-        account.setAccountNumber(generateUniqueAccountNumber());
-        account.setUser(user);
-        account.setAccountType(request.getAccountType());
-        // Encode the PIN for security
-        account.setTransactionPin(securityHelper.encodePin(request.getTransactionPin()));
-        account.setBalance(request.getInitialDeposit());
-        account.setActive(true); // Set account as active
-        return account;
-    }
-
-    private String generateUniqueAccountNumber() {
-        String accountNumber;
-        do {
-            accountNumber = accountNumberGenerator.generateAccountNumber();
-        } while (isAccountNumberExists(accountNumber));
-        return accountNumber;
-    }
-
-    private boolean isAccountNumberExists(String accountNumber) {
-        return userRepository.findAll().stream()
-                .flatMap(user -> user.getAccounts().stream())
-                .anyMatch(account -> account.getAccountNumber().equals(accountNumber));
+    @Override
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
     }
 }

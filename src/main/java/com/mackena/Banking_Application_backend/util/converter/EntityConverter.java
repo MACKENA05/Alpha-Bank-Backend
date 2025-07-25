@@ -53,12 +53,24 @@ public class EntityConverter {
                 .accountType(account.getAccountType())
                 .balance(account.getBalance())
                 .formattedBalance(currencyFormatter.formatAmount(account.getBalance()))
-                .active(account.isActive())
+                .isActive(account.isActive())
                 .lowBalance(account.getBalance().compareTo(LOW_BALANCE_THRESHOLD) < 0)
                 .createdAt(account.getCreatedAt())
-                .updatedAt(account.getUpdatedAt())
+//              .updatedAt(account.getUpdatedAt())
                 .build();
     }
+
+    private AccountSummaryResponse toAccountSummaryResponse(com.mackena.Banking_Application_backend.models.entity.Account account) {
+        return AccountSummaryResponse.builder()
+                .id(account.getId())
+                .accountNumber(account.getAccountNumber())
+                .accountType(account.getAccountType())
+                .balance(account.getBalance())
+                .isActive(account.isActive())
+                .createdAt(account.getCreatedAt())
+                .build();
+    }
+
 
 
 

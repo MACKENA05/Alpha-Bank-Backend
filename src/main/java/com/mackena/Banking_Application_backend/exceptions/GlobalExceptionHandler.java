@@ -5,10 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import com.mackena.Banking_Application_backend.dto.response.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
+import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,5 +95,50 @@ public class GlobalExceptionHandler {
         log.error("Unexpected error occurred: ", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.error("An unexpected error occurred. Please try again later."));
+    }
+
+    @ExceptionHandler(UserHasActiveBalanceException.class)
+    public ResponseEntity<ErrorResponse> handleUserHasActiveBalance(UserHasActiveBalanceException e, WebRequest request) {
+        log.error("User has active balance: {}", e.getMessage());
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(e.getMessage() + " Total balance: KES " + e.getTotalBalance())
+                .error("User Has Active Balance")
+                .status(HttpStatus.BAD_REQUEST.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException e, WebRequest request) {
+        log.error("Access denied: {}", e.getMessage());
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message("Access denied. You don't have permission to access this resource.")
+                .error("Access Denied")
+                .status(HttpStatus.FORBIDDEN.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalState(IllegalStateException e, WebRequest request) {
+        log.error("Illegal state: {}", e.getMessage());
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .message(e.getMessage())
+                .error("Illegal State")
+                .status(HttpStatus.BAD_REQUEST.value())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

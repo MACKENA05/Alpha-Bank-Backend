@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :name, '%'))")
     List<User> findByNameOrEmailContaining(@Param("name") String name, @Param("email") String email);
 
+    //find all active users
+    @Query("SELECT u FROM User u WHERE u.isEnabled = true")
+    Page<User> findAllActiveUsers(Pageable pageable);
+
+    //get total balance using uder id
+    @Query("SELECT SUM(a.balance) FROM User u JOIN u.accounts a WHERE u.id = :userId AND a.isActive = true")
+    BigDecimal getTotalBalanceByUserId(@Param("userId") Long userId);
+
     // Statistics queries
     long countByRole(UserRole role);
 
@@ -54,4 +63,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u ORDER BY u.createdAt DESC")
     Page<User> findRecentUsers(Pageable pageable);
 
+    @Query("SELECT COUNT(a) FROM User u JOIN u.accounts a WHERE u.id = :userId AND a.isActive = true")
+    int getActiveAccountCountByUserId(@Param("userId") Long userId);
 }

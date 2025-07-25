@@ -27,4 +27,5 @@ public class UserResponse {
     private List<AccountResponse> accounts;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private int totalAccounts;
 }

@@ -19,9 +19,8 @@ public class AccountResponse {
     private AccountType accountType;
     private BigDecimal balance;
     private String formattedBalance;
-    private boolean active;
+    private boolean isActive;
     private boolean lowBalance;
     private UserResponse user;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }
