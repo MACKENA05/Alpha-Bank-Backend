@@ -1,12 +1,12 @@
 package com.mackena.Banking_Application_backend.models.enums;
 
-public enum TransferDirection {
+public enum TransactionDirection {
     DEBIT("debit"),
     CREDIT("credit");
 
     private final String value;
 
-    TransferDirection(String value) {
+    TransactionDirection(String value) {
         this.value = value;
     }
 
