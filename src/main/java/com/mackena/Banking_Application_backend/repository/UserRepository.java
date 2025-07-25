@@ -18,50 +18,19 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    //    Authentication using email and phone number during signUp and signIn
-
-    Optional<User> findByEmail(String username);
+    Optional<User> findByEmail(String email);
 
     boolean existsByEmail(String email);
 
     boolean existsByPhoneNumber(String phoneNumber);
 
-//    User Management based on roles/active
+    Page<User> findAll(Pageable pageable);
 
-    List<User> findByRole(UserRole role);
-
-    List<User> findByIsEnabled(Boolean isEnabled);
-
-    List<User> findByRole(UserRole role, Pageable pageable);
-
-//    Search
-    @Query("SELECT u FROM User u WHERE " +
-            "LOWER(CONCAT(u.firstName, ' ', u.lastName)) LIKE LOWER(CONCAT('%', :name, '%')) " +
-            "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :name, '%'))")
-    List<User> findByNameOrEmailContaining(@Param("name") String name, @Param("email") String email);
-
-    //find all active users
     @Query("SELECT u FROM User u WHERE u.isEnabled = true")
     Page<User> findAllActiveUsers(Pageable pageable);
 
-    //get total balance using uder id
     @Query("SELECT SUM(a.balance) FROM User u JOIN u.accounts a WHERE u.id = :userId AND a.isActive = true")
     BigDecimal getTotalBalanceByUserId(@Param("userId") Long userId);
-
-    // Statistics queries
-    long countByRole(UserRole role);
-
-    long countByIsEnabled(Boolean isEnabled);
-
-    @Query("SELECT COUNT(u) FROM User u WHERE u.createdAt >= :date")
-    long countUsersCreatedAfter(@Param("date") LocalDateTime date);
-
-    // Admin queries
-    @Query("SELECT u FROM User u WHERE u.role = 'ADMIN' AND u.isEnabled = true")
-    List<User> findActiveAdmins();
-
-    @Query("SELECT u FROM User u ORDER BY u.createdAt DESC")
-    Page<User> findRecentUsers(Pageable pageable);
 
     @Query("SELECT COUNT(a) FROM User u JOIN u.accounts a WHERE u.id = :userId AND a.isActive = true")
     int getActiveAccountCountByUserId(@Param("userId") Long userId);

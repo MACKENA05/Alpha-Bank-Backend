@@ -52,9 +52,7 @@ public class EntityConverter {
                 .accountNumber(account.getAccountNumber())
                 .accountType(account.getAccountType())
                 .balance(account.getBalance())
-                .formattedBalance(currencyFormatter.formatAmount(account.getBalance()))
                 .isActive(account.isActive())
-                .lowBalance(account.getBalance().compareTo(LOW_BALANCE_THRESHOLD) < 0)
                 .createdAt(account.getCreatedAt())
 //              .updatedAt(account.getUpdatedAt())
                 .build();
