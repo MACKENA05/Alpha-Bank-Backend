@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -46,11 +47,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     Optional<Transaction> findByTransferReference(String transferReference);
 
     //monthly transaction summary
-    @Query("SELECT COUNT(t) FROM Transaction t WHERE t.account.id = :accountId " +
-            "AND t.createdAt >= :startDate AND t.createdAt <= :endDate")
-    long countTransactionsByAccountAndDateRange(
-            @Param("accountId") Long accountId,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate);
-    
+    @Query("SELECT t FROM Transaction t WHERE t.account.accountNumber = :accountNumber " +
+            "AND t.createdAt BETWEEN :fromDate AND :toDate ORDER BY t.createdAt DESC")
+    List<Transaction> findByAccountNumberAndDateRange(
+            @Param("accountNumber") String accountNumber,
+            @Param("fromDate") LocalDateTime fromDate,
+            @Param("toDate") LocalDateTime toDate);
+
+
 }

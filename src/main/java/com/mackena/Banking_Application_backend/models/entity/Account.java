@@ -4,7 +4,6 @@ package com.mackena.Banking_Application_backend.models.entity;
 import com.mackena.Banking_Application_backend.models.enums.AccountType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Transaction;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 

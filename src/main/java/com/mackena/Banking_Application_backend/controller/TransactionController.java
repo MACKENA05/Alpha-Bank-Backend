@@ -8,10 +8,14 @@ import com.mackena.Banking_Application_backend.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/transactions")
@@ -74,15 +78,31 @@ public class TransactionController {
     }
 
     // Transaction history endpoint
-    @GetMapping("/history")
+    @PostMapping("/history")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public ResponseEntity<TransactionHistoryResponse> getTransactionHistory(
-            @ModelAttribute TransactionHistoryRequest request,
+    public TransactionHistoryResponse getTransactionHistory(
+            @Valid @RequestBody TransactionHistoryRequest request,
             @CurrentUser UserDetails userDetails) {
 
-        User currentUser = userService.findUserByEmail(userDetails.getUsername());
-        TransactionHistoryResponse response = transactionHistoryService.getTransactionHistory(request, currentUser);
+        log.info("Received transaction history request: {}", request);
 
-        return ResponseEntity.ok(response);
+        User currentUser = userService.findUserByEmail(userDetails.getUsername());
+        return transactionHistoryService.getTransactionHistory(request, currentUser);
     }
+
+
+
+//    @GetMapping("/history")
+//    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+//    public TransactionHistoryResponse getTransactionHistory(
+//            @RequestParam String accountNumber,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+//            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+//            @AuthenticationPrincipal User currentUser) {
+//
+//        TransactionHistoryRequest request = new TransactionHistoryRequest();
+//        log.info("Received transaction history request: {}", request);
+//        return transactionHistoryService.getTransactionHistory(request, currentUser);
+//    }
+
 }

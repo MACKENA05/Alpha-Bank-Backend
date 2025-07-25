@@ -12,6 +12,7 @@ import com.mackena.Banking_Application_backend.repository.AccountRepository;
 import com.mackena.Banking_Application_backend.repository.TransactionRepository;
 import com.mackena.Banking_Application_backend.service.TransactionHistoryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionHistoryServiceImpl implements TransactionHistoryService {
 
     private final TransactionRepository transactionRepository;
@@ -30,11 +32,23 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
 
     public TransactionHistoryResponse getTransactionHistory(TransactionHistoryRequest request, User currentUser) {
 
+        // Validate input
+        if (request.getAccountNumber() == null || request.getAccountNumber().trim().isEmpty()) {
+            log.error("Invalid account number provided: {}", request.getAccountNumber());
+            throw new IllegalArgumentException("Account number cannot be null or empty");
+        }
+
+        log.info("Fetching transaction history for account: {}", request.getAccountNumber());
+
         // Validate account access
         Account account = accountRepository.findByAccountNumber(request.getAccountNumber())
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> {
+                    log.error("Account not found for account number: {}", request.getAccountNumber());
+                    return new RuntimeException("Account not found");
+                });
 
         if (!account.getUser().getId().equals(currentUser.getId()) && !currentUser.getRole().isAdmin()) {
+            log.warn("Access denied for user {} to account {}", currentUser.getId(), request.getAccountNumber());
             throw new RuntimeException("Access denied to this account");
         }
 
@@ -43,10 +57,23 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
 
         // Convert enum parameters
-        TransactionType transactionType = request.getTransactionType() != null ?
-                TransactionType.valueOf(request.getTransactionType()) : null;
-        TransactionDirection transactionDirection = request.getTransactionDirection() != null ?
-                TransactionDirection.valueOf(request.getTransactionDirection()) : null;
+        TransactionType transactionType = null;
+        try {
+            transactionType = request.getTransactionType() != null ?
+                    TransactionType.valueOf(request.getTransactionType()) : null;
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid transaction type: {}", request.getTransactionType());
+            throw new IllegalArgumentException("Invalid transaction type: " + request.getTransactionType());
+        }
+
+        TransactionDirection transactionDirection = null;
+        try {
+            transactionDirection = request.getTransactionDirection() != null ?
+                    TransactionDirection.valueOf(request.getTransactionDirection()) : null;
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid transaction direction: {}", request.getTransactionDirection());
+            throw new IllegalArgumentException("Invalid transaction direction: " + request.getTransactionDirection());
+        }
 
         // Get filtered transactions
         Page<Transaction> transactionPage = transactionRepository.findTransactionsWithFilters(
@@ -83,12 +110,14 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
                 .transferReference(transaction.getTransferReference())
                 .amount(transaction.getAmount())
                 .transactionType(transaction.getTransactionType().getDescription())
-                .transactionDirection(transaction.getTransactionDirection().getValue())
+                .transactionDirection(transaction.getTransactionDirection() != null ?
+                        transaction.getTransactionDirection().name() : null) // Use name() instead of getValue()
                 .description(transaction.getDescription())
                 .status(transaction.getStatus().getDescription())
                 .balanceAfter(transaction.getBalanceAfter())
                 .createdAt(transaction.getCreatedAt())
-                .accountNumber(transaction.getAccount().getAccountNumber())
+                .accountNumber(transaction.getAccount() != null ?
+                        transaction.getAccount().getAccountNumber() : null) // Handle null account
                 .build();
     }
 }

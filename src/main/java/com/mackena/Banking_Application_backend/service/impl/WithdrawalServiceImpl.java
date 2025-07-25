@@ -108,9 +108,9 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         }
 
         // Optional: Add minimum balance check
-        BigDecimal minBalance = BigDecimal.valueOf(10.00); // Minimum $10 balance
+        BigDecimal minBalance = BigDecimal.valueOf(10.00);
         if (account.getBalance().subtract(amount).compareTo(minBalance) < 0) {
-            throw new InsufficientFundsException("Cannot withdraw. Minimum balance of $10 must be maintained");
+            throw new InsufficientFundsException("Cannot withdraw. Minimum balance of Kes10 must be maintained");
         }
     }
 

@@ -1,6 +1,7 @@
 package com.mackena.Banking_Application_backend.dtos.request;
 
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Data
 public class TransactionHistoryRequest {
 
+    @NotBlank(message = "Account number cannot be null or empty")
     private String accountNumber;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

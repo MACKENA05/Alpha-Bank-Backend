@@ -57,16 +57,17 @@ public class TransferServiceImpl implements TransferService {
         validateSufficientBalance(senderAccount, request.getAmount());
 
         // 4. Generate transfer reference
-        String transferReference = generateTransferReference();
+        String debitReferenceNumber = generateReferenceNumber();
+        String creditReferenceNumber = generateReferenceNumber();
 
         try {
             // 5. Create debit transaction (sender)
             Transaction debitTransaction = createDebitTransaction(
-                    senderAccount, request.getAmount(), request.getNotes(), transferReference);
+                    senderAccount, request.getAmount(), request.getNotes(), creditReferenceNumber);
 
             // 6. Create credit transaction (receiver)
             Transaction creditTransaction = createCreditTransaction(
-                    receiverAccount, request.getAmount(), request.getNotes(), transferReference);
+                    receiverAccount, request.getAmount(), request.getNotes(), debitReferenceNumber);
 
             // 7. Update balances
             updateAccountBalance(senderAccount, request.getAmount().negate());
@@ -84,10 +85,10 @@ public class TransferServiceImpl implements TransferService {
             accountRepository.save(senderAccount);
             accountRepository.save(receiverAccount);
 
-            log.info("Transfer completed successfully. Reference: {}", transferReference);
+
 
             return TransferResponse.builder()
-                    .transferReference(transferReference)
+                    .transferReference(debitReferenceNumber)
                     .senderAccountNumber(request.getSenderAccountNumber())
                     .receiverAccountNumber(request.getReceiverAccountNumber())
                     .amount(request.getAmount())
@@ -99,7 +100,6 @@ public class TransferServiceImpl implements TransferService {
                     .build();
 
         } catch (Exception e) {
-            log.error("Transfer failed. Reference: {}, Error: {}", transferReference, e.getMessage());
             throw new RuntimeException("Transfer failed: " + e.getMessage());
         }
     }
@@ -155,7 +155,7 @@ public class TransferServiceImpl implements TransferService {
         return Transaction.builder()
                 .account(account)
                 .amount(amount)
-                .transactionType(TransactionType.TRANSFER_OUT)
+                .transactionType(TransactionType.TRANSFER)
                 .transactionDirection(TransactionDirection.DEBIT)
                 .description("Transfer to " + notes)
                 .referenceNumber(generateReferenceNumber())
@@ -169,7 +169,7 @@ public class TransferServiceImpl implements TransferService {
         return Transaction.builder()
                 .account(account)
                 .amount(amount)
-                .transactionType(TransactionType.TRANSFER_IN)
+                .transactionType(TransactionType.TRANSFER)
                 .transactionDirection(TransactionDirection.CREDIT)
                 .description("Transfer from " + notes)
                 .referenceNumber(generateReferenceNumber())

@@ -28,7 +28,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false,length = 255)
+    @Column(unique = true, nullable = false, length = 255)
     private String email;
 
     @Column(nullable = false)
@@ -67,30 +67,4 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-////    utils methods
-//
-//    public void addAccount(Account account) {
-//        accounts.add(account);
-//        account.setUser(this);
-//    }
-//    public void removeAccount(Account account) {
-//        accounts.remove(account);
-//        account.setUser(null);
-//    }
-//    public boolean isAdmin(){
-//        return UserRole.ADMIN.equals(this.role);
-//    }
-//
-//    public String getFullName() {
-//        return firstName + " " + lastName;
-//    }
-//
-//
-//    public void setEnabled(boolean enabled) {
-//        this.enabled = enabled;
-//    }
-//
-//    public boolean isEnabled() {
-//        return enabled;
-//    }
 }
