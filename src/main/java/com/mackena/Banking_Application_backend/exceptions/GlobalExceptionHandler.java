@@ -101,8 +101,23 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUserHasActiveBalance(UserHasActiveBalanceException e, WebRequest request) {
         log.error("User has active balance: {}", e.getMessage());
 
+        // Safe formatting of the balance
+        String balanceMessage;
+        try {
+            Object totalBalance = e.getTotalBalance();
+            if (totalBalance != null) {
+                // Convert to string safely without any formatting flags
+                balanceMessage = e.getMessage() + " Total balance: KES " + String.valueOf(totalBalance);
+            } else {
+                balanceMessage = e.getMessage() + " Total balance: KES 0.00";
+            }
+        } catch (Exception formatException) {
+            log.warn("Error formatting balance in exception handler", formatException);
+            balanceMessage = e.getMessage() + " (Balance information unavailable)";
+        }
+
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .message(e.getMessage() + " Total balance: KES " + e.getTotalBalance())
+                .message(balanceMessage)
                 .error("User Has Active Balance")
                 .status(HttpStatus.BAD_REQUEST.value())
                 .path(request.getDescription(false).replace("uri=", ""))
