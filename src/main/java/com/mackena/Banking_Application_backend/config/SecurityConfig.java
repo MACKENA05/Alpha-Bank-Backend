@@ -60,7 +60,11 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // Enable CORS
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api/auth/login", "api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                        .requestMatchers("/api/transactions/deposit").hasRole("ADMIN")
+                        .requestMatchers("/api/transactions/withdraw").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/transactions/transfer").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/transactions/history").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())

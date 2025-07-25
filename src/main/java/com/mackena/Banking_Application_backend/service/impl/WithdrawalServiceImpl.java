@@ -118,7 +118,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
         return Transaction.builder()
                 .account(account)
                 .amount(request.getAmount())
-                .transactionType(TransactionType.valueOf("WITHDRAW"))
+                .transactionType(TransactionType.WITHDRAW)
                 .transactionDirection(TransactionDirection.DEBIT)
                 .description("ATM Withdrawal - " + (request.getNotes() != null ? request.getNotes() : "Cash withdrawal"))
                 .referenceNumber(generateReferenceNumber())
