@@ -8,10 +8,22 @@ import     com.mackena.Banking_Application_backend.dto.response.DeleteUserRespon
 import org.springframework.transaction.annotation.Transactional;
 
 public interface UserService {
+
+    @Transactional(readOnly = true)
     UserResponse getUserProfile(Long id);
+
+    @Transactional(readOnly = true)
     UserResponse getUserById(Long id);
+
+    @Transactional(readOnly = true)
     UserListResponse getAllUsers(Pageable pageable);
+
+    @Transactional
     DeleteUserResponse deleteUser(Long userId);
+
+    @Transactional(readOnly = true)
     User findUserById(Long UserId);
+
+    @Transactional(readOnly = true)
     User findUserByEmail(String email);
 };

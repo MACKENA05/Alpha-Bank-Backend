@@ -26,14 +26,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final EntityConverter userConverter;
 
-    @Transactional(readOnly = true)
+
     @Override
     public UserResponse getUserProfile(Long id) {
         User user = findUserById(id);
         return userConverter.toUserResponse(user);
     }
 
-    @Transactional(readOnly = true)
+
     @Override
     public UserResponse getUserById(Long id) {
         User user = findUserById(id);
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @Transactional
+
     @Override
     public DeleteUserResponse deleteUser(Long userId) {
 
@@ -80,7 +80,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));

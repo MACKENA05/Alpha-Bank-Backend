@@ -28,7 +28,7 @@ public class DepositServiceImpl implements DepositService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
-    @Transactional
+
     @Override
     public TransactionResponse processDeposit(DepositRequest request, User adminUser) {
 

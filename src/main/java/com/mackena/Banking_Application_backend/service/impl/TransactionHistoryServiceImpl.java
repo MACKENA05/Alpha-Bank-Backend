@@ -36,7 +36,7 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
     public TransactionHistoryResponse getTransactionHistory(TransactionHistoryRequest request, User currentUser) {
         log.info("Getting transaction history for user: {}", currentUser.getEmail());
 
-        // This method is for regular users only - no admin logic
+        // method is for regular users only no admin
         Account account;
 
         if (request.getAccountNumber() == null || request.getAccountNumber().trim().isEmpty()) {
@@ -104,7 +104,7 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
         return buildTransactionHistoryResponse(transactionPage);
     }
 
-    // FIXED: Simplified method using specific queries instead of complex filtering
+
     private Page<Transaction> getFilteredTransactionsForAdmin(TransactionHistoryRequest request, Pageable pageable) {
         // Parse enums safely
         TransactionType transactionType = parseTransactionType(request.getTransactionType());
@@ -180,7 +180,6 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
         log.info("Using in-memory filtering for complex query");
 
         // For simplicity, just return all transactions when filters are too complex
-        // In a real-world scenario, you might want to implement more sophisticated logic
         return transactionRepository.findAllTransactionsOrderByCreatedAtDesc(pageable);
     }
 
@@ -229,7 +228,7 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
         return buildTransactionHistoryResponse(transactionPage);
     }
 
-    // Helper method to handle account-specific filtering with PostgreSQL-friendly queries
+
     private Page<Transaction> getFilteredAccountTransactions(Long accountId,
                                                              TransactionHistoryRequest request, TransactionType transactionType,
                                                              TransactionDirection transactionDirection, Pageable pageable) {

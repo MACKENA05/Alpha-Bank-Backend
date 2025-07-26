@@ -7,5 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface WithdrawalService {
 
+    @Transactional
     TransactionResponse processWithdrawal (WithdrawalRequest request, User currentUser);
 }

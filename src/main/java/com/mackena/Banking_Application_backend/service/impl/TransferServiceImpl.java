@@ -33,7 +33,7 @@ public class TransferServiceImpl implements TransferService {
     private final TransactionRepository transactionRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Transactional
+
     @Override
     public TransferResponse transferMoney(TransferRequest request, User currentUser) {
 

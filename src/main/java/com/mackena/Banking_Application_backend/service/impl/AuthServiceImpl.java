@@ -40,7 +40,6 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    @Transactional
     public AuthResponse registerUser(UserRegistrationRequest request) {
         log.info("Starting user registration for email: {}", request.getEmail());
 
@@ -67,7 +66,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
 
-    @Transactional
     @Override
     public AuthResponse loginUser(LoginRequest request) {
         log.info("User login attempt for email: {}", request.getEmail());

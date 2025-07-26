@@ -25,7 +25,7 @@ public class TransactionController {
     private final TransactionHistoryService transactionHistoryService;
     private final UserService userService;
 
-    // Withdrawal endpoint - Only users can withdraw from their own accounts
+    // Withdrawal endpoint (users with account only can withdraw)
     @PostMapping("/withdraw")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<TransactionResponse> withdrawMoney(
@@ -41,7 +41,7 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
-    // Deposit endpoint - Only admins can deposit
+    // Deposit endpoint(only admins can deposit)
     @PostMapping("/deposit")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TransactionResponse> depositMoney(
@@ -57,7 +57,7 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
-    // Transfer endpoint - Users can transfer from their own accounts
+    // Transfer endpoint(Users can transfer from their own accounts)
     @PostMapping("/transfer")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<TransferResponse> transferMoney(
@@ -73,7 +73,7 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
-    // FIXED: Transaction history endpoint with better parameter handling
+    // Getting transaction history for specific user
     @GetMapping("/history")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<TransactionHistoryResponse> getTransactionHistory(
@@ -106,7 +106,7 @@ public class TransactionController {
 
 //
 
-    // FIXED: Admin endpoint to get all transactions - cleaner implementation
+    // getting all transactions by admin
     @GetMapping("/admin/all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TransactionHistoryResponse> getAllTransactions(
@@ -129,14 +129,13 @@ public class TransactionController {
                 null, startDate, endDate, transactionType, transactionDirection,
                 minAmount, maxAmount, sortBy, sortDirection, page, size);
 
-        // FIXED: Call the admin-specific method instead of regular user method
         TransactionHistoryResponse response = transactionHistoryService.getAllTransactionsForAdmin(request);
 
         return ResponseEntity.ok(response);
     }
 
-    // IMPORTANT: Put more specific paths BEFORE generic ones
-    // Get specific transaction by reference number - MOVED UP
+
+    // Get specific transaction by reference number
     @GetMapping("/reference/{referenceNumber}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<TransactionDetailResponse> getTransactionByReference(
@@ -151,7 +150,7 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
-    // Get specific transaction by ID - MOVED DOWN and made more specific
+    // Get specific transaction by ID
     @GetMapping("/id/{transactionId}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<TransactionDetailResponse> getTransactionById(
@@ -166,7 +165,7 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
-    // FIXED: Helper method to build TransactionHistoryRequest with proper validation
+    // helper method to build TransactionHistoryRequest with proper validation
     private TransactionHistoryRequest buildTransactionHistoryRequest(
             String accountNumber, String startDate, String endDate, String transactionType,
             String transactionDirection, String minAmount, String maxAmount,

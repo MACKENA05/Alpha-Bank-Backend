@@ -28,7 +28,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final EntityConverter accountConverter;
 
-    @Transactional(readOnly = true)
+
     @Override
     public AccountListResponse getUserAccounts(Long userId) {
         List<Account> accounts = accountRepository.findByUserIdAndIsActiveTrueOrderByCreatedAtDesc(userId);
@@ -50,7 +50,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public AccountResponse getAccountByNumber(String accountNumber, Long currentUserId, boolean isAdmin) {
 
         Account account = findAccountByNumber(accountNumber);
@@ -62,7 +61,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public LowBalanceAccountsResponse getLowBalanceAccounts(BigDecimal threshold) {
         List<Account> lowBalanceAccounts = accountRepository.findAccountsWithLowBalance(threshold);
 
@@ -85,7 +83,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public TotalBalanceResponse getTotalSystemBalance() {
 
         BigDecimal totalBalance = accountRepository.getTotalSystemBalance();
@@ -107,7 +104,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Account findAccountByNumber(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountNumber));

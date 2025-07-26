@@ -21,30 +21,30 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     // Find by account with pagination
     Page<Transaction> findByAccountIdOrderByCreatedAtDesc(Long accountId, Pageable pageable);
 
-    // Find by account with filters (existing method - works fine)
-    @Query("""
-    SELECT t FROM Transaction t
-    WHERE t.account.id = :accountId
-      AND (:startDate IS NULL OR t.createdAt >= :startDate)
-      AND (:endDate IS NULL OR t.createdAt <= :endDate)
-      AND (:transactionType IS NULL OR t.transactionType = :transactionType)
-      AND (:transactionDirection IS NULL OR t.transactionDirection = :transactionDirection)
-      AND (:minAmount IS NULL OR t.amount >= :minAmount)
-      AND (:maxAmount IS NULL OR t.amount <= :maxAmount)
-    ORDER BY t.createdAt DESC
-""")
-    Page<Transaction> findTransactionsWithFilters(
-            @Param("accountId") Long accountId,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate,
-            @Param("transactionType") TransactionType transactionType,
-            @Param("transactionDirection") TransactionDirection transactionDirection,
-            @Param("minAmount") BigDecimal minAmount,
-            @Param("maxAmount") BigDecimal maxAmount,
-            Pageable pageable
-    );
+//    // Find by account with filters
+//    @Query("""
+//    SELECT t FROM Transaction t
+//    WHERE t.account.id = :accountId
+//      AND (:startDate IS NULL OR t.createdAt >= :startDate)
+//      AND (:endDate IS NULL OR t.createdAt <= :endDate)
+//      AND (:transactionType IS NULL OR t.transactionType = :transactionType)
+//      AND (:transactionDirection IS NULL OR t.transactionDirection = :transactionDirection)
+//      AND (:minAmount IS NULL OR t.amount >= :minAmount)
+//      AND (:maxAmount IS NULL OR t.amount <= :maxAmount)
+//    ORDER BY t.createdAt DESC
+//""")
+//    Page<Transaction> findTransactionsWithFilters(
+//            @Param("accountId") Long accountId,
+//            @Param("startDate") LocalDateTime startDate,
+//            @Param("endDate") LocalDateTime endDate,
+//            @Param("transactionType") TransactionType transactionType,
+//            @Param("transactionDirection") TransactionDirection transactionDirection,
+//            @Param("minAmount") BigDecimal minAmount,
+//            @Param("maxAmount") BigDecimal maxAmount,
+//            Pageable pageable
+//    );
 
-    // Simple queries for all transactions - no complex filtering to avoid PostgreSQL issues
+    // Simple queries for all transactions
     @Query("SELECT t FROM Transaction t ORDER BY t.createdAt DESC")
     Page<Transaction> findAllTransactionsOrderByCreatedAtDesc(Pageable pageable);
 
@@ -151,7 +151,7 @@ ORDER BY t.createdAt DESC
     Page<Transaction> findAllByOrderByCreatedAtDesc(Pageable pageable);
 
 
-    // Account-specific queries with individual filters (PostgreSQL-friendly)
+    // Account-specific queries with individual filters
     @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId AND t.createdAt >= :startDate AND t.createdAt <= :endDate ORDER BY t.createdAt DESC")
     Page<Transaction> findByAccountIdAndDateRange(
             @Param("accountId") Long accountId,

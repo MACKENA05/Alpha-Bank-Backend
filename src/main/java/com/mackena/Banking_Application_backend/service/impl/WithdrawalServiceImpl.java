@@ -32,7 +32,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     private final TransactionRepository transactionRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Transactional
+
     @Override
     public TransactionResponse processWithdrawal(WithdrawalRequest request, User currentUser) {
 
