@@ -33,6 +33,7 @@ public class WithdrawalServiceImpl implements WithdrawalService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
+    @Override
     public TransactionResponse processWithdrawal(WithdrawalRequest request, User currentUser) {
 
         // Validate and get account

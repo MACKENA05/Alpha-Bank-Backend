@@ -26,6 +26,10 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     List<Account> findByUserIdAndIsActiveTrueOrderByCreatedAtDesc(Long userId);
 
+    List<Account> findByUserId(Long userId);
+
+    List<Account> findByUser(User user);
+
     List<Account> findByUserIdOrderByCreatedAtDesc(Long userId);
 
     @Query("SELECT a FROM Account a WHERE a.balance < :threshold AND a.isActive = true ORDER BY a.balance ASC")

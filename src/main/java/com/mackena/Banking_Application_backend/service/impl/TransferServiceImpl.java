@@ -34,6 +34,7 @@ public class TransferServiceImpl implements TransferService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
+    @Override
     public TransferResponse transferMoney(TransferRequest request, User currentUser) {
 
         // 1. Validate accounts

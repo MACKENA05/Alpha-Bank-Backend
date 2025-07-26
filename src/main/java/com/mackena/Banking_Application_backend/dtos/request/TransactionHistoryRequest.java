@@ -1,6 +1,7 @@
 package com.mackena.Banking_Application_backend.dtos.request;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -11,14 +12,15 @@ import java.time.LocalDateTime;
 @Data
 public class TransactionHistoryRequest {
 
-    @NotBlank(message = "Account number cannot be null or empty")
     private String accountNumber;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startDate;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime endDate;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime endDate;;
 
     private String transactionType; // DEPOSIT, WITHDRAW, TRANSFER_IN, TRANSFER_OUT
     private String transactionDirection; // DEBIT, CREDIT
@@ -31,4 +33,7 @@ public class TransactionHistoryRequest {
 
     private int page = 0;
     private int size = 20;
+
+
+
 }
