@@ -13,6 +13,10 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "users", indexes = {
+        @Index(name = "idx_user_email", columnList = "email"),
+        @Index(name= "idx_user_phone", columnList = "phone_number")
+})
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -24,7 +28,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false,length = 255)
+    @Column(unique = true, nullable = false, length = 255)
     private String email;
 
     @Column(nullable = false)
@@ -47,13 +51,13 @@ public class User {
     @Builder.Default
     private UserRole role = UserRole.USER;
 
-    @Column(name = "is_active")
+    @Column(name = "is_enabled")
     @Builder.Default
-    private boolean isActive = true;
+    private boolean isEnabled = true;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
-    private List<Account> accounts = new ArrayList<>();
+    public List<Account> accounts = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -62,10 +66,5 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-
-
-
-
 
 }
