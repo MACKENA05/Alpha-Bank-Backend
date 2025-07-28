@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -54,4 +55,20 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query("SELECT t.amount FROM Account a JOIN a.transactions t WHERE a.id = :accountId ORDER BY t.createdAt DESC LIMIT 1")
     BigDecimal getLastTransactionAmount(@Param("accountId") Long accountId);
-}
+
+
+    List<Account> findByUserAndIsActiveTrue(User user);
+    List<Account> findByBalanceLessThanAndIsActiveTrue(BigDecimal threshold);
+    long countByIsActiveTrue();
+
+    @Query("SELECT SUM(a.balance) FROM Account a WHERE a.isActive = true")
+    Optional<BigDecimal> sumAllActiveAccountBalances();
+
+    @Query("SELECT a FROM Account a WHERE " +
+            "(LOWER(a.accountNumber) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(a.user.firstName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(a.user.lastName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+            "LOWER(a.user.email) LIKE LOWER(CONCAT('%', :query, '%')))")
+    List<Account> findByAccountNumberContainingIgnoreCaseOrUser_FirstNameContainingIgnoreCaseOrUser_LastNameContainingIgnoreCaseOrUser_EmailContainingIgnoreCase(
+            String query1, String query2, String query3, String query4, Pageable pageable);
+    }

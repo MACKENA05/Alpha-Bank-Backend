@@ -1,4 +1,4 @@
-package com.mackena.Banking_Application_backend.dto.response;
+package com.mackena.Banking_Application_backend.dtos.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

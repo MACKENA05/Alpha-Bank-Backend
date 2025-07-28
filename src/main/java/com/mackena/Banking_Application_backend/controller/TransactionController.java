@@ -2,6 +2,7 @@ package com.mackena.Banking_Application_backend.controller;
 
 import com.mackena.Banking_Application_backend.dtos.request.*;
 import com.mackena.Banking_Application_backend.dtos.response.*;
+import com.mackena.Banking_Application_backend.exceptions.InvalidAccountException;
 import com.mackena.Banking_Application_backend.models.entity.User;
 import com.mackena.Banking_Application_backend.security.CurrentUser;
 import com.mackena.Banking_Application_backend.service.*;
@@ -62,15 +63,16 @@ public class TransactionController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<TransferResponse> transferMoney(
             @Valid @RequestBody TransferRequest request,
-            @CurrentUser UserDetails userDetails) {
+            @CurrentUser UserDetails userDetails) throws InvalidAccountException {
 
-        log.info("Transfer request from user: {} for amount: {}",
+        log.info("Transfer request received from user: {} for amount: {}",
                 userDetails.getUsername(), request.getAmount());
 
-        User currentUser = userService.findUserByEmail(userDetails.getUsername());
-        TransferResponse response = transferService.transferMoney(request, currentUser);
+            User currentUser = userService.findUserByEmail(userDetails.getUsername());
+            TransferResponse response = transferService.transferMoney(request, currentUser);
 
-        return ResponseEntity.ok(response);
+            log.info("Transfer completed successfully with reference: {}", response.getTransferReference());
+            return ResponseEntity.ok(response);
     }
 
     // Getting transaction history for specific user
@@ -226,4 +228,5 @@ public class TransactionController {
 
         return request;
     }
+
 }

@@ -4,11 +4,12 @@ import com.mackena.Banking_Application_backend.dtos.response.AccountListResponse
 import com.mackena.Banking_Application_backend.dtos.response.AccountResponse;
 import com.mackena.Banking_Application_backend.dtos.response.TotalBalanceResponse;
 import com.mackena.Banking_Application_backend.models.entity.Account;
-import com.mackena.Banking_Application_backend.service.impl.AccountServiceImpl;
+import com.mackena.Banking_Application_backend.models.entity.User;
 import com.mackena.Banking_Application_backend.dto.response.LowBalanceAccountsResponse;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface AccountService{
 
@@ -21,7 +22,12 @@ public interface AccountService{
     @Transactional(readOnly = true)
     LowBalanceAccountsResponse getLowBalanceAccounts(BigDecimal threshold);
 
-    @Transactional(readOnly = true)
+    List<Account> getAccountsByUser(User user);
+
+    Account findByAccountNumber(String accountNumber);
+
+    List<Account> findAccountsWithBalanceBelow(BigDecimal threshold);
+
     TotalBalanceResponse getTotalSystemBalance();
 
     @Transactional(readOnly = true)
@@ -30,4 +36,9 @@ public interface AccountService{
     @Transactional
     void validateAccountOwnership(Account account, Long userId);
 
+    long getTotalAccountCount();
+
+    long getActiveAccountCount();
+
+    List<Account> searchAccounts(String query, int page, int size);
 }

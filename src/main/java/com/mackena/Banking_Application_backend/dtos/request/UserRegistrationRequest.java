@@ -23,7 +23,7 @@ public class UserRegistrationRequest {
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*$",message = "Password must contain atleast one uppercase letter,one lowercase and one number" )
-    private String Password;
+    private String password;
 
     @NotBlank(message = "First name is required")
     @Size(min = 2, max = 100, message = "First name must be between 2 and 100 characters")
@@ -40,7 +40,7 @@ public class UserRegistrationRequest {
             message = "Please provide a valid Kenyan phone number (e.g., +254712345678 or 0712345678)")
     private String phoneNumber;
 
-    @NotBlank(message = "Address is required")
+
     @Size(min = 10, max = 500, message = "Address must be between 10 and 500 characters")
     private String address;
 
