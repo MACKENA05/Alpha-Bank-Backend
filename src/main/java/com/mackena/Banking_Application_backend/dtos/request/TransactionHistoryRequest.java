@@ -14,6 +14,8 @@ public class TransactionHistoryRequest {
 
     private String accountNumber;
 
+    private Long userId;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime startDate;

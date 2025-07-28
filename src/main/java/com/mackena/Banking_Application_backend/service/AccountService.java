@@ -1,7 +1,9 @@
 package com.mackena.Banking_Application_backend.service;
 
+import com.mackena.Banking_Application_backend.dtos.request.CreateAccountRequest;
 import com.mackena.Banking_Application_backend.dtos.response.AccountListResponse;
 import com.mackena.Banking_Application_backend.dtos.response.AccountResponse;
+import com.mackena.Banking_Application_backend.dtos.response.CreateAccountResponse;
 import com.mackena.Banking_Application_backend.dtos.response.TotalBalanceResponse;
 import com.mackena.Banking_Application_backend.models.entity.Account;
 import com.mackena.Banking_Application_backend.models.entity.User;
@@ -22,6 +24,9 @@ public interface AccountService{
     @Transactional(readOnly = true)
     LowBalanceAccountsResponse getLowBalanceAccounts(BigDecimal threshold);
 
+    CreateAccountResponse createAccountForUser(CreateAccountRequest request, String userEmail);
+
+
     List<Account> getAccountsByUser(User user);
 
     Account findByAccountNumber(String accountNumber);
@@ -41,4 +46,6 @@ public interface AccountService{
     long getActiveAccountCount();
 
     List<Account> searchAccounts(String query, int page, int size);
+
+
 }

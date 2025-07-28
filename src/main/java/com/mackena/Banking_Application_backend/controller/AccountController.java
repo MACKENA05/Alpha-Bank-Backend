@@ -1,15 +1,14 @@
 package com.mackena.Banking_Application_backend.controller;
 
-import com.mackena.Banking_Application_backend.dtos.response.AccountListResponse;
-import com.mackena.Banking_Application_backend.dtos.response.AccountResponse;
-import com.mackena.Banking_Application_backend.dtos.response.ApiResponse;
-import com.mackena.Banking_Application_backend.dtos.response.TotalBalanceResponse;
+import com.mackena.Banking_Application_backend.dtos.request.CreateAccountRequest;
+import com.mackena.Banking_Application_backend.dtos.response.*;
 import com.mackena.Banking_Application_backend.models.entity.Account;
 import com.mackena.Banking_Application_backend.models.entity.User;
 import com.mackena.Banking_Application_backend.repository.AccountRepository;
 import com.mackena.Banking_Application_backend.security.CurrentUser;
 import com.mackena.Banking_Application_backend.service.AccountService;
 import com.mackena.Banking_Application_backend.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -126,6 +125,7 @@ public class AccountController {
                     .build());
         }
     }
+
 
     // Validate account for transfer - specific endpoint for validation
     @GetMapping("/validate-for-transfer/{accountNumber}")
@@ -252,6 +252,40 @@ public class AccountController {
                     .success(false)
                     .message("Account search failed")
                     .build());
+        }
+    }
+
+    @PostMapping("/create")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<CreateAccountResponse> createAccount(
+            @Valid @RequestBody CreateAccountRequest request,
+            @CurrentUser UserDetails userDetails) {
+
+        log.info("Creating account for user: {} with type: {}",
+                userDetails.getUsername(), request.getAccountType());
+
+        try {
+            CreateAccountResponse response = accountService.createAccountForUser(
+                    request, userDetails.getUsername());
+
+            log.info("Successfully created account {} for user {}",
+                    response.getAccountNumber(), userDetails.getUsername());
+
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            log.warn("Account creation failed for user {}: {}",
+                    userDetails.getUsername(), e.getMessage());
+
+            return ResponseEntity.badRequest().body(
+                    CreateAccountResponse.failure(e.getMessage()));
+
+        } catch (Exception e) {
+            log.error("Unexpected error creating account for user {}",
+                    userDetails.getUsername(), e);
+
+            return ResponseEntity.internalServerError().body(
+                    CreateAccountResponse.failure("Failed to create account. Please try again."));
         }
     }
 }

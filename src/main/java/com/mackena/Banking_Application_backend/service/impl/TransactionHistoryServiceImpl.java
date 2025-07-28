@@ -175,6 +175,99 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
         }
     }
 
+    @Override
+    public TransactionHistoryResponse getUserTransactionsForAdmin(TransactionHistoryRequest request) {
+        log.info("Admin requesting transactions for user ID: {}", request.getUserId());
+
+        if (request.getUserId() == null) {
+            throw new IllegalArgumentException("User ID is required");
+        }
+
+        String sortBy = request.getSortBy() != null ? request.getSortBy() : "createdAt";
+        String sortDirection = request.getSortDirection() != null ? request.getSortDirection() : "DESC";
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
+
+        // Get transactions for the specific user
+        Page<Transaction> transactionPage = getTransactionsByUserId(request.getUserId(), request, pageable);
+
+        return buildTransactionHistoryResponse(transactionPage);
+    }
+
+    private Page<Transaction> getTransactionsByUserId(Long userId, TransactionHistoryRequest request, Pageable pageable) {
+        log.info("Getting transactions for user ID: {}", userId);
+
+        // Parse other filters
+        TransactionType transactionType = parseTransactionType(request.getTransactionType());
+        TransactionDirection transactionDirection = parseTransactionDirection(request.getTransactionDirection());
+
+        boolean hasDateFilter = request.getStartDate() != null && request.getEndDate() != null;
+        boolean hasTypeFilter = transactionType != null;
+        boolean hasDirectionFilter = transactionDirection != null;
+        boolean hasAmountFilter = request.getMinAmount() != null && request.getMaxAmount() != null;
+
+        try {
+            if (!hasDateFilter && !hasTypeFilter && !hasDirectionFilter && !hasAmountFilter) {
+                // Only userId filter
+                log.debug("Getting transactions for user {} without additional filters", userId);
+                return transactionRepository.findByAccountUserIdOrderByCreatedAtDesc(userId, pageable);
+
+            } else if (hasDateFilter && !hasTypeFilter && !hasDirectionFilter && !hasAmountFilter) {
+                // UserId + date filter
+                log.debug("Getting transactions for user {} with date filter: {} to {}",
+                        userId, request.getStartDate(), request.getEndDate());
+                return transactionRepository.findByAccountUserIdAndDateRange(
+                        userId, request.getStartDate(), request.getEndDate(), pageable);
+
+            } else if (!hasDateFilter && hasTypeFilter && !hasDirectionFilter && !hasAmountFilter) {
+                // UserId + type filter
+                log.debug("Getting transactions for user {} with type filter: {}", userId, transactionType);
+                return transactionRepository.findByAccountUserIdAndTransactionType(
+                        userId, transactionType, pageable);
+
+            } else if (!hasDateFilter && !hasTypeFilter && hasDirectionFilter && !hasAmountFilter) {
+                // UserId + direction filter
+                log.debug("Getting transactions for user {} with direction filter: {}", userId, transactionDirection);
+                return transactionRepository.findByAccountUserIdAndTransactionDirection(
+                        userId, transactionDirection, pageable);
+
+            } else if (!hasDateFilter && !hasTypeFilter && !hasDirectionFilter && hasAmountFilter) {
+                // UserId + amount filter
+                log.debug("Getting transactions for user {} with amount filter: {} to {}",
+                        userId, request.getMinAmount(), request.getMaxAmount());
+                return transactionRepository.findByAccountUserIdAndAmountRange(
+                        userId, request.getMinAmount(), request.getMaxAmount(), pageable);
+
+            } else if (hasDateFilter && hasTypeFilter && !hasDirectionFilter && !hasAmountFilter) {
+                // UserId + date + type filters
+                log.debug("Getting transactions for user {} with date and type filters", userId);
+                return transactionRepository.findByAccountUserIdAndDateRangeAndType(
+                        userId, request.getStartDate(), request.getEndDate(), transactionType, pageable);
+
+            } else if (hasDateFilter && !hasTypeFilter && hasDirectionFilter && !hasAmountFilter) {
+                // UserId + date + direction filters
+                log.debug("Getting transactions for user {} with date and direction filters", userId);
+                return transactionRepository.findByAccountUserIdAndDateRangeAndDirection(
+                        userId, request.getStartDate(), request.getEndDate(), transactionDirection, pageable);
+
+            } else if (!hasDateFilter && hasTypeFilter && hasDirectionFilter && !hasAmountFilter) {
+                // UserId + type + direction filters
+                log.debug("Getting transactions for user {} with type and direction filters", userId);
+                return transactionRepository.findByAccountUserIdAndTypeAndDirection(
+                        userId, transactionType, transactionDirection, pageable);
+
+            } else {
+                // Complex filters - fallback to simple userId query
+                log.debug("Complex filters with userId {}, using simple userId query", userId);
+                return transactionRepository.findByAccountUserIdOrderByCreatedAtDesc(userId, pageable);
+            }
+
+        } catch (Exception e) {
+            log.error("Error with userId filter query for user {}: {}", userId, e.getMessage());
+            return transactionRepository.findByAccountUserIdOrderByCreatedAtDesc(userId, pageable);
+        }
+    }
+
     // Fallback method for complex filtering - gets all transactions and filters in memory
     private Page<Transaction> filterTransactionsInMemory(TransactionHistoryRequest request, Pageable pageable) {
         log.info("Using in-memory filtering for complex query");

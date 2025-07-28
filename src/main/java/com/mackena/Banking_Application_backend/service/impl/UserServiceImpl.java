@@ -1,7 +1,6 @@
 package com.mackena.Banking_Application_backend.service.impl;
 
 import com.mackena.Banking_Application_backend.dto.response.DeleteUserResponse;
-import com.mackena.Banking_Application_backend.dtos.response.UserListResponse;
 import com.mackena.Banking_Application_backend.dtos.response.UserResponse;
 import com.mackena.Banking_Application_backend.exceptions.UserHasActiveBalanceException;
 import com.mackena.Banking_Application_backend.exceptions.UserNotFoundException;
@@ -10,7 +9,6 @@ import com.mackena.Banking_Application_backend.repository.UserRepository;
 import com.mackena.Banking_Application_backend.service.UserService;
 import com.mackena.Banking_Application_backend.util.converter.EntityConverter;
 import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -33,20 +31,23 @@ public class UserServiceImpl implements UserService {
         return userConverter.toUserResponse(user);
     }
 
+    @Override
+    public User findUserById(Long userId) {
+        log.info("Finding user by ID: {}", userId);
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+    }
+
 
     @Override
     public UserResponse getUserById(Long id) {
         User user = findUserById(id);
         return userConverter.toUserResponse(user);
     }
-
     @Override
-    public UserListResponse getAllUsers(Pageable pageable) {
-
-        Page<User> userPage = userRepository.findAll(pageable);
-
-        Page<UserResponse> userResponsePage = userPage.map(userConverter::toUserResponse);
-        return UserListResponse.from(userResponsePage);
+    public Page<User> getAllUsers(Pageable pageable) {
+        log.info("Getting all users with pagination: {}", pageable);
+        return userRepository.findAll(pageable);
     }
 
 
@@ -79,11 +80,6 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-    @Override
-    public User findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
-    }
 
     @Override
     public User findUserByEmail(String email) {

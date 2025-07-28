@@ -34,4 +34,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT COUNT(a) FROM User u JOIN u.accounts a WHERE u.id = :userId AND a.isActive = true")
     int getActiveAccountCountByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.accounts WHERE u.id = :id")
+    Optional<User> findByIdWithAccounts(@Param("id") Long id);
 }

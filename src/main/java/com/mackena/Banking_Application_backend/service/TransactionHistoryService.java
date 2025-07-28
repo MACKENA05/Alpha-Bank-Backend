@@ -22,4 +22,7 @@ public interface TransactionHistoryService {
 
     @Transactional(readOnly = true)
     TransactionHistoryResponse getAccountTransactions(Long accountId, TransactionHistoryRequest request);
+
+    TransactionHistoryResponse getUserTransactionsForAdmin(TransactionHistoryRequest request);
+
 }

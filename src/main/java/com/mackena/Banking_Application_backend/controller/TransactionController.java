@@ -229,4 +229,48 @@ public class TransactionController {
         return request;
     }
 
+    @GetMapping("/admin/user/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<TransactionHistoryResponse> getUserTransactions(
+            @PathVariable Long userId,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String transactionType,
+            @RequestParam(required = false) String transactionDirection,
+            @RequestParam(required = false) String minAmount,
+            @RequestParam(required = false) String maxAmount,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDirection,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @CurrentUser UserDetails userDetails) {
+
+        log.info("Admin {} requesting transactions for user ID: {}", userDetails.getUsername(), userId);
+
+        // Build request object with userId
+        TransactionHistoryRequest request = buildTransactionHistoryRequestWithUserId(
+                userId, null, startDate, endDate, transactionType, transactionDirection,
+                minAmount, maxAmount, sortBy, sortDirection, page, size);
+
+        TransactionHistoryResponse response = transactionHistoryService.getUserTransactionsForAdmin(request);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // Updated helper method to include userId
+    private TransactionHistoryRequest buildTransactionHistoryRequestWithUserId(
+            Long userId, String accountNumber, String startDate, String endDate, String transactionType,
+            String transactionDirection, String minAmount, String maxAmount,
+            String sortBy, String sortDirection, int page, int size) {
+
+        TransactionHistoryRequest request = buildTransactionHistoryRequest(
+                accountNumber, startDate, endDate, transactionType, transactionDirection,
+                minAmount, maxAmount, sortBy, sortDirection, page, size);
+
+        // Set the userId
+        request.setUserId(userId);
+
+        return request;
+    }
+
 }

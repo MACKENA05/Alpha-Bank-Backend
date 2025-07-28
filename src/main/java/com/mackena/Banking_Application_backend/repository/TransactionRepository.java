@@ -152,43 +152,117 @@ ORDER BY t.createdAt DESC
 
 
     // Account-specific queries with individual filters
-    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId AND t.createdAt >= :startDate AND t.createdAt <= :endDate ORDER BY t.createdAt DESC")
-    Page<Transaction> findByAccountIdAndDateRange(
-            @Param("accountId") Long accountId,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate,
-            Pageable pageable
-    );
+    @Query("SELECT t FROM Transaction t WHERE t.account.user.id = :userId ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountUserIdOrderByCreatedAtDesc(@Param("userId") Long userId, Pageable pageable);
 
-    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId AND t.transactionType = :transactionType ORDER BY t.createdAt DESC")
-    Page<Transaction> findByAccountIdAndTransactionType(
-            @Param("accountId") Long accountId,
-            @Param("transactionType") TransactionType transactionType,
-            Pageable pageable
-    );
+    // User + Date range filtering
+    @Query("SELECT t FROM Transaction t WHERE t.account.user.id = :userId " +
+            "AND t.createdAt BETWEEN :startDate AND :endDate ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountUserIdAndDateRange(@Param("userId") Long userId,
+                                                      @Param("startDate") LocalDateTime startDate,
+                                                      @Param("endDate") LocalDateTime endDate,
+                                                      Pageable pageable);
 
-    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId AND t.transactionDirection = :transactionDirection ORDER BY t.createdAt DESC")
-    Page<Transaction> findByAccountIdAndTransactionDirection(
-            @Param("accountId") Long accountId,
-            @Param("transactionDirection") TransactionDirection transactionDirection,
-            Pageable pageable
-    );
+    // User + Transaction type filtering
+    @Query("SELECT t FROM Transaction t WHERE t.account.user.id = :userId " +
+            "AND t.transactionType = :transactionType ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountUserIdAndTransactionType(@Param("userId") Long userId,
+                                                            @Param("transactionType") TransactionType transactionType,
+                                                            Pageable pageable);
 
-    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId AND t.amount >= :minAmount AND t.amount <= :maxAmount ORDER BY t.createdAt DESC")
-    Page<Transaction> findByAccountIdAndAmountRange(
-            @Param("accountId") Long accountId,
-            @Param("minAmount") BigDecimal minAmount,
-            @Param("maxAmount") BigDecimal maxAmount,
-            Pageable pageable
-    );
+    // User + Transaction direction filtering
+    @Query("SELECT t FROM Transaction t WHERE t.account.user.id = :userId " +
+            "AND t.transactionDirection = :transactionDirection ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountUserIdAndTransactionDirection(@Param("userId") Long userId,
+                                                                 @Param("transactionDirection") TransactionDirection transactionDirection,
+                                                                 Pageable pageable);
 
-    // Combined filters for common combinations
-    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId AND t.createdAt >= :startDate AND t.createdAt <= :endDate AND t.transactionType = :transactionType ORDER BY t.createdAt DESC")
-    Page<Transaction> findByAccountIdAndDateRangeAndType(
-            @Param("accountId") Long accountId,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate,
-            @Param("transactionType") TransactionType transactionType,
-            Pageable pageable
-    );
+    // User + Amount range filtering
+    @Query("SELECT t FROM Transaction t WHERE t.account.user.id = :userId " +
+            "AND t.amount BETWEEN :minAmount AND :maxAmount ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountUserIdAndAmountRange(@Param("userId") Long userId,
+                                                        @Param("minAmount") BigDecimal minAmount,
+                                                        @Param("maxAmount") BigDecimal maxAmount,
+                                                        Pageable pageable);
+
+    // User + Date + Type filtering
+    @Query("SELECT t FROM Transaction t WHERE t.account.user.id = :userId " +
+            "AND t.createdAt BETWEEN :startDate AND :endDate " +
+            "AND t.transactionType = :transactionType ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountUserIdAndDateRangeAndType(@Param("userId") Long userId,
+                                                             @Param("startDate") LocalDateTime startDate,
+                                                             @Param("endDate") LocalDateTime endDate,
+                                                             @Param("transactionType") TransactionType transactionType,
+                                                             Pageable pageable);
+
+    // User + Date + Direction filtering
+    @Query("SELECT t FROM Transaction t WHERE t.account.user.id = :userId " +
+            "AND t.createdAt BETWEEN :startDate AND :endDate " +
+            "AND t.transactionDirection = :transactionDirection ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountUserIdAndDateRangeAndDirection(@Param("userId") Long userId,
+                                                                  @Param("startDate") LocalDateTime startDate,
+                                                                  @Param("endDate") LocalDateTime endDate,
+                                                                  @Param("transactionDirection") TransactionDirection transactionDirection,
+                                                                  Pageable pageable);
+
+    // User + Type + Direction filtering
+    @Query("SELECT t FROM Transaction t WHERE t.account.user.id = :userId " +
+            "AND t.transactionType = :transactionType " +
+            "AND t.transactionDirection = :transactionDirection ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountUserIdAndTypeAndDirection(@Param("userId") Long userId,
+                                                             @Param("transactionType") TransactionType transactionType,
+                                                             @Param("transactionDirection") TransactionDirection transactionDirection,
+                                                             Pageable pageable);
+
+    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId " +
+            "AND t.createdAt BETWEEN :startDate AND :endDate ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountIdAndDateRange(@Param("accountId") Long accountId,
+                                                  @Param("startDate") LocalDateTime startDate,
+                                                  @Param("endDate") LocalDateTime endDate,
+                                                  Pageable pageable);
+
+    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId " +
+            "AND t.transactionType = :transactionType ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountIdAndTransactionType(@Param("accountId") Long accountId,
+                                                        @Param("transactionType") TransactionType transactionType,
+                                                        Pageable pageable);
+
+    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId " +
+            "AND t.transactionDirection = :transactionDirection ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountIdAndTransactionDirection(@Param("accountId") Long accountId,
+                                                             @Param("transactionDirection") TransactionDirection transactionDirection,
+                                                             Pageable pageable);
+
+    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId " +
+            "AND t.amount BETWEEN :minAmount AND :maxAmount ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountIdAndAmountRange(@Param("accountId") Long accountId,
+                                                    @Param("minAmount") BigDecimal minAmount,
+                                                    @Param("maxAmount") BigDecimal maxAmount,
+                                                    Pageable pageable);
+
+    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId " +
+            "AND t.createdAt BETWEEN :startDate AND :endDate " +
+            "AND t.transactionType = :transactionType ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountIdAndDateRangeAndType(@Param("accountId") Long accountId,
+                                                         @Param("startDate") LocalDateTime startDate,
+                                                         @Param("endDate") LocalDateTime endDate,
+                                                         @Param("transactionType") TransactionType transactionType,
+                                                         Pageable pageable);
+
+    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId " +
+            "AND t.createdAt BETWEEN :startDate AND :endDate " +
+            "AND t.transactionDirection = :transactionDirection ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountIdAndDateRangeAndDirection(@Param("accountId") Long accountId,
+                                                              @Param("startDate") LocalDateTime startDate,
+                                                              @Param("endDate") LocalDateTime endDate,
+                                                              @Param("transactionDirection") TransactionDirection transactionDirection,
+                                                              Pageable pageable);
+
+    @Query("SELECT t FROM Transaction t WHERE t.account.id = :accountId " +
+            "AND t.transactionType = :transactionType " +
+            "AND t.transactionDirection = :transactionDirection ORDER BY t.createdAt DESC")
+    Page<Transaction> findByAccountIdAndTypeAndDirection(@Param("accountId") Long accountId,
+                                                         @Param("transactionType") TransactionType transactionType,
+                                                         @Param("transactionDirection") TransactionDirection transactionDirection,
+                                                         Pageable pageable);
 }

@@ -57,7 +57,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
-    private List<Account> accounts = new ArrayList<>();
+    public List<Account> accounts = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
