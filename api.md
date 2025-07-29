@@ -810,25 +810,26 @@ Transaction Model
 ```json
 {
 "testUsers": [
+  {
+    "email": "customer@gmail.com",
+    "password": "Pass@123",
+    "role": "customer",
+     "accounts": [
+        {
+           "accountNumber": "ACC202507297679",
+           "type": "checking",
+           "balance": 2500.00,
+           "pin" : 1234
+        },
+        {
+           "accountNumber": "ACC202507293289",
+           "type": "savings",
+           "balance": 10000.00
+        }
+     ]
+  },
 {
-"email": "customer@test.com",
-"password": "TestPassword123!",
-"role": "customer",
-"accounts": [
-{
-"accountNumber": "1001234567890",
-"type": "checking",
-"balance": 2500.00
-},
-{
-"accountNumber": "2001234567890",
-"type": "savings",
-"balance": 10000.00
-}
-]
-},
-{
-"email": "admin@test.com",
+"email": "admin@gmail.com",
 "password": "AdminPassword123!",
 "role": "admin"
 }
