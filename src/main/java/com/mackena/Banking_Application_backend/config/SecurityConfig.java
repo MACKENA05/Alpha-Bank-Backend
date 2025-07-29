@@ -81,25 +81,15 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Specify exact origins for production
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",  // React dev server
-                "http://localhost:3001",  // Alternative React port
-                "https://yourdomain.com"  // Production domain
-        ));
+        configuration.setAllowedOrigins(Arrays.asList("*"));
 
         configuration.setAllowedMethods(Arrays.asList(
                 "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
         ));
 
-        configuration.setAllowedHeaders(Arrays.asList(
-                "Authorization",
-                "Content-Type",
-                "X-Requested-With",
-                "Accept",
-                "Origin"
-        ));
+        configuration.setAllowedHeaders(List.of("*"));
 
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false);
         configuration.setMaxAge(3600L); // Cache preflight for 1 hour
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
