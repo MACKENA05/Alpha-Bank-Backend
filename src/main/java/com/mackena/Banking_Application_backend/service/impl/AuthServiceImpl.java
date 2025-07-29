@@ -98,7 +98,7 @@ public class AuthServiceImpl implements AuthService {
             throw e;
 
         } catch (Exception e) {
-            log.error("Login failed for email: {} - {}", request.getEmail(), e.getMessage());
+            log.error("Exception Login failed for email: {} - {}", request.getEmail(), e.getMessage());
             throw new InvalidCredentialsException("Invalid email or password");
         }
     }
