@@ -15,13 +15,13 @@ import java.util.List;
 
 public interface AccountService{
 
-    @Transactional(readOnly = true)
+
     AccountListResponse getUserAccounts(Long userId);
 
-    @Transactional(readOnly = true)
+
     AccountResponse getAccountByNumber(String accountNumber, Long CurrentUserId, boolean isAdmin);
 
-    @Transactional(readOnly = true)
+
     LowBalanceAccountsResponse getLowBalanceAccounts(BigDecimal threshold);
 
     CreateAccountResponse createAccountForUser(CreateAccountRequest request, String userEmail);
@@ -35,7 +35,7 @@ public interface AccountService{
 
     TotalBalanceResponse getTotalSystemBalance();
 
-    @Transactional(readOnly = true)
+
     Account findAccountByNumber(String accountNumber);
 
     @Transactional
