@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -164,8 +165,13 @@ public class AccountServiceImpl implements AccountService {
         long totalUsers = accountRepository.countUsersWithActiveAccounts();
         BigDecimal averageBalance = BigDecimal.ZERO;
 
+
         if (totalActiveAccount > 0) {
-            averageBalance = totalBalance.divide(BigDecimal.valueOf(totalActiveAccount));
+            averageBalance = totalBalance.divide(
+                    BigDecimal.valueOf(totalActiveAccount),
+                    2,
+                    RoundingMode.HALF_UP
+            );
         }
 
         return TotalBalanceResponse.builder()
