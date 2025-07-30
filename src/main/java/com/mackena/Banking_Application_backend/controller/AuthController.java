@@ -51,8 +51,6 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logoutUser() {
-        // For JWT tokens, logout is typically handled client-side by removing the token
-        // You could implement token blacklisting here if needed
         log.info("Logout request received");
         return ResponseEntity.ok("Logged out successfully");
     }

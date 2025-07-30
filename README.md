@@ -233,12 +233,12 @@ npm run test:watch
 
 1. **📦 Build the Docker Image**
    ```bash
-   docker build -t <repo-name>/alpha-bank-backend .
+   docker build -t <dockerrepo-name>/alpha-bank-backend .
    ```
 
 2. **📤 Push to Docker Hub**
    ```bash
-   docker push <repo-name>/alpha-bank-backend
+   docker push <dockerrepo-name>/alpha-bank-backend
    ```
 
 ### Using Docker Compose
@@ -259,13 +259,13 @@ docker login
 2. Rebuild the image:
 
 ```bash
-docker build -t mackena05/alpha-bank-backend .
+docker build -t <dockerrepo name>/alpha-bank-backend .
 ```
 
 3. Push again:
 
 ```bash
-docker push mackena05/alpha-bank-backend
+docker push <dockerrepo name>/alpha-bank-backend
 ```
 
 4. Render will pull the new version automatically or manually if configured.
