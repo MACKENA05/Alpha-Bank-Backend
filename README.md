@@ -94,8 +94,8 @@ spring.jpa.properties.hibernate.format_sql=true
 
 # JWT Configuration
 app.jwt.secret=your_super_secret_jwt_key
-# 24h = 86,400,000 milliseconds
-app.jwt.expiration=86400000
+# 1h = 3,600,000 milliseconds
+app.jwt.expiration=3600000
 
 # Email Configuration
 spring.mail.host=smtp.gmail.com

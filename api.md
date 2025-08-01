@@ -830,7 +830,7 @@ Transaction Model
   },
 {
 "email": "admin@gmail.com",
-"password": "AdminPassword123!",
+"password": "Pass@123",
 "role": "admin"
 }
 ]
